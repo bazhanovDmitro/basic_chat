@@ -1,12 +1,26 @@
 import standardStyle from "./chat.module.scss";
 import useLocalStorage from "../../Hooks/useLocalStorage";
+import { useEffect, useRef } from "react";
+import { sendMessage } from "../../firebase";
 
 export default function NewMessage({ customStyle, currentChannel }) {
   const style = customStyle ? customStyle : standardStyle;
   const [text, setText] = useLocalStorage(currentChannel, "");
 
+  const messageBoxRef = useRef(null);
+  const messageInputRef = useRef(null);
+
   const onTextInput = (event) => {
     setText(event.target.value);
+  };
+
+  const onKeyDown = (event) => {
+    if (event.key === `Enter`) {
+      event.preventDefault();
+      const text = event.target.value;
+      sendMessage(text, currentChannel);
+      setText("");
+    }
   };
 
   const resizeOnInput = (event) => {
@@ -24,14 +38,25 @@ export default function NewMessage({ customStyle, currentChannel }) {
     }
   };
 
+  useEffect(() => {
+    messageBoxRef.current.style.height = `55px`;
+    messageInputRef.current.style.height = `20px`;
+  }, [currentChannel]);
+
   return (
-    <div className={style.messageInputContainer} onInput={resizeOnInput}>
+    <div
+      className={style.messageInputContainer}
+      onInput={resizeOnInput}
+      ref={messageBoxRef}
+    >
       <textarea
         className={style.input}
+        ref={messageInputRef}
         type="text"
         placeholder="Message"
         value={text}
         onInput={onTextInput}
+        onKeyDown={onKeyDown}
       />
     </div>
   );

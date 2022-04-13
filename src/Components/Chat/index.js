@@ -6,7 +6,7 @@ export default function Chat({ customStyle, currentChannel }) {
   return (
     <>
       <ChatHeader />
-      <ChatContainer />
+      <ChatContainer currentChannel={currentChannel} />
       <NewMessage currentChannel={currentChannel} />
     </>
   );
